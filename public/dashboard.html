@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - School Project</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Dashboard</h1>
+            <p>Welcome back, <span id="usernameDisplay">User</span>!</p>
+        </div>
+
+        <div class="user-info">
+            <h2>Your Information</h2>
+            <div class="user-detail">
+                <span>Username:</span>
+                <span id="username">Loading...</span>
+            </div>
+            <div class="user-detail">
+                <span>Email:</span>
+                <span id="email">Loading...</span>
+            </div>
+            <div class="user-detail">
+                <span>Member Since:</span>
+                <span id="createdAt">Loading...</span>
+            </div>
+        </div>
+
+        <button class="btn btn-logout" id="logoutBtn">Logout</button>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
