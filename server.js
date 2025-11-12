@@ -93,6 +93,24 @@ db.connect((err) => {
         if (err) console.error('Error creating orders table:', err);
         else console.log('Orders table ready');
     });
+
+    // Create reviews table
+    const createReviewsTable = `
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            product_name VARCHAR(255) NOT NULL,
+            rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+            comment TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    `;
+
+    db.query(createReviewsTable, (err) => {
+        if (err) console.error('Error creating reviews table:', err);
+        else console.log('Reviews table ready');
+    });
 });
 
 // Routes
@@ -491,6 +509,70 @@ app.get('/api/orders/last', (req, res) => {
             };
 
             res.json(order);
+        }
+    );
+});
+
+// Review endpoints
+// Submit a review
+app.post('/api/reviews', (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { product_name, rating, comment } = req.body;
+
+    if (!product_name || !rating) {
+        return res.status(400).json({ error: 'Product name and rating are required' });
+    }
+
+    if (rating < 1 || rating > 5) {
+        return res.status(400).json({ error: 'Rating must be between 1 and 5' });
+    }
+
+    db.query('INSERT INTO reviews (user_id, product_name, rating, comment) VALUES (?, ?, ?, ?)',
+        [req.session.userId, product_name, rating, comment || ''],
+        (err) => {
+            if (err) {
+                return res.status(500).json({ error: 'Error submitting review' });
+            }
+            res.json({ message: 'Review submitted successfully' });
+        }
+    );
+});
+
+// Get reviews for a product
+app.get('/api/reviews/:productName', (req, res) => {
+    const productName = req.params.productName;
+
+    db.query(`
+        SELECT reviews.*, users.username
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        WHERE reviews.product_name = ?
+        ORDER BY reviews.created_at DESC
+    `, [productName], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error fetching reviews' });
+        }
+        res.json(results);
+    });
+});
+
+// Get average rating for a product
+app.get('/api/reviews/:productName/average', (req, res) => {
+    const productName = req.params.productName;
+
+    db.query('SELECT AVG(rating) as average, COUNT(*) as count FROM reviews WHERE product_name = ?',
+        [productName],
+        (err, results) => {
+            if (err) {
+                return res.status(500).json({ error: 'Error fetching rating' });
+            }
+            res.json({
+                average: results[0].average || 0,
+                count: results[0].count || 0
+            });
         }
     );
 });

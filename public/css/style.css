@@ -138,7 +138,51 @@ body {
     }
 
     .nav-container {
-        padding: 20px 32px;
+        padding: 20px 24px;
+    }
+
+    .container {
+        padding: 40px 24px;
+        margin-top: 60px;
+    }
+
+    .dashboard-container {
+        padding: 40px 24px;
+        margin-top: 60px;
+    }
+
+    .home-container {
+        padding: 40px 24px;
+    }
+
+    .home-container h1 {
+        font-size: 36px;
+    }
+
+    .home-container p {
+        font-size: 16px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-group .btn {
+        width: 100%;
+    }
+
+    .user-info {
+        padding: 24px;
+    }
+
+    .user-detail {
+        flex-direction: column;
+        gap: 8px;
     }
 }
 
