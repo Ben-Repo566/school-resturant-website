@@ -206,11 +206,12 @@ app.post('/api/login', (req, res) => {
 
     db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
         if (err) {
-            return res.status(500).json({ error: 'Database error' });
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Unable to connect. Please try again later.' });
         }
 
         if (results.length === 0) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: 'No account found with this email' });
         }
 
         const user = results[0];
@@ -219,7 +220,7 @@ app.post('/api/login', (req, res) => {
         const match = await bcrypt.compare(password, user.password);
 
         if (!match) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: 'Incorrect password' });
         }
 
         // Set session
