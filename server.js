@@ -42,6 +42,57 @@ db.connect((err) => {
         return;
     }
     console.log('Connected to MySQL database');
+
+    // Create tables if they don't exist
+    const createUsersTable = `
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(50) UNIQUE NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    `;
+
+    const createCartTable = `
+        CREATE TABLE IF NOT EXISTS cart (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            item_name VARCHAR(255) NOT NULL,
+            price DECIMAL(10, 2) NOT NULL,
+            quantity INT NOT NULL DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    `;
+
+    const createOrdersTable = `
+        CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            total_amount DECIMAL(10, 2) NOT NULL,
+            items TEXT NOT NULL,
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    `;
+
+    // Execute table creation queries
+    db.query(createUsersTable, (err) => {
+        if (err) console.error('Error creating users table:', err);
+        else console.log('Users table ready');
+    });
+
+    db.query(createCartTable, (err) => {
+        if (err) console.error('Error creating cart table:', err);
+        else console.log('Cart table ready');
+    });
+
+    db.query(createOrdersTable, (err) => {
+        if (err) console.error('Error creating orders table:', err);
+        else console.log('Orders table ready');
+    });
 });
 
 // Routes
