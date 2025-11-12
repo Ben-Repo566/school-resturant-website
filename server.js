@@ -29,22 +29,33 @@ app.use(session({
     }
 }));
 
-// MySQL connection
+// MySQL connection pool (more robust for production)
 // Railway provides MySQL variables as MYSQLHOST, MYSQLUSER, etc.
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
     port: process.env.MYSQLPORT || 3306,
     user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
     password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
-    database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'school_project'
+    database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'school_project',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-db.connect((err) => {
+// Test connection and log database info
+db.getConnection((err, connection) => {
     if (err) {
         console.error('Error connecting to database:', err);
+        console.error('Database config:', {
+            host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
+            port: process.env.MYSQLPORT || 3306,
+            user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+            database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'school_project'
+        });
         return;
     }
     console.log('Connected to MySQL database');
+    connection.release();
 
     // Create tables if they don't exist
     const createUsersTable = `
@@ -173,7 +184,8 @@ app.post('/api/register', async (req, res) => {
         // Check if user already exists
         db.query('SELECT * FROM users WHERE email = ? OR username = ?', [email, username], async (err, results) => {
             if (err) {
-                return res.status(500).json({ error: 'Database error' });
+                console.error('Database error during user check:', err);
+                return res.status(500).json({ error: 'Database error. Please try again later.' });
             }
 
             if (results.length > 0) {
@@ -188,14 +200,16 @@ app.post('/api/register', async (req, res) => {
                 [username, email, hashedPassword],
                 (err, result) => {
                     if (err) {
-                        return res.status(500).json({ error: 'Error creating user' });
+                        console.error('Database error during user insertion:', err);
+                        return res.status(500).json({ error: 'Error creating user. Please try again later.' });
                     }
                     res.status(201).json({ message: 'User registered successfully' });
                 }
             );
         });
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Server error during registration:', error);
+        res.status(500).json({ error: 'Server error. Please try again later.' });
     }
 });
 
