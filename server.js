@@ -8,6 +8,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - required for Railway/production environments
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,7 +22,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Set to true if using HTTPS
+        secure: process.env.NODE_ENV === 'production', // Set to true in production (HTTPS)
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         httpOnly: true,
         sameSite: 'lax'
