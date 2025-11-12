@@ -3,35 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - School Project</title>
+    <title>Dashboard - Potato Kingdom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/restaurant.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>Dashboard</h1>
-            <p>Welcome back, <span id="usernameDisplay">User</span>!</p>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <img src="/images/logo.png" alt="Logo" class="nav-logo">
+            </a>
+            <button class="nav-toggle" id="navToggle">☰</button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/menu" class="nav-link">Menu</a></li>
+                <li><a href="/fun-facts" class="nav-link">Fun Facts</a></li>
+                <li><a href="/cart" class="nav-link">Cart</a></li>
+                <li><a href="/dashboard" class="nav-link active">Dashboard</a></li>
+                <li><a href="/admin" class="nav-link">Admin</a></li>
+            </ul>
         </div>
+    </nav>
 
-        <div class="user-info">
-            <h2>Your Information</h2>
-            <div class="user-detail">
-                <span>Username:</span>
-                <span id="username">Loading...</span>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <div class="header">
+                <h1>Dashboard</h1>
+                <p>Welcome back, <span id="usernameDisplay">User</span>!</p>
             </div>
-            <div class="user-detail">
-                <span>Email:</span>
-                <span id="email">Loading...</span>
+
+            <div class="user-info">
+                <h2>Your Information</h2>
+                <div class="user-detail">
+                    <span>Username:</span>
+                    <span id="username">Loading...</span>
+                </div>
+                <div class="user-detail">
+                    <span>Email:</span>
+                    <span id="email">Loading...</span>
+                </div>
+                <div class="user-detail">
+                    <span>Member Since:</span>
+                    <span id="createdAt">Loading...</span>
+                </div>
             </div>
-            <div class="user-detail">
-                <span>Member Since:</span>
-                <span id="createdAt">Loading...</span>
+
+            <div class="user-info" id="lastOrderSection" style="display: none;">
+                <h2>Last Order</h2>
+                <div id="lastOrderDetails"></div>
             </div>
+
+            <div id="noOrderMessage" style="display: none; text-align: center; padding: 40px; background: rgba(18, 18, 18, 0.02); border-radius: 8px; margin: 24px 0;">
+                <p style="color: rgba(18, 18, 18, 0.6); margin-bottom: 16px;">You haven't placed any orders yet</p>
+                <a href="/menu" style="display: inline-block; padding: 12px 24px; background: #121212; color: #ffffff; text-decoration: none; border-radius: 6px;">Browse Menu</a>
+            </div>
+
+            <button class="btn btn-logout" id="logoutBtn">Logout</button>
         </div>
-
-        <button class="btn btn-logout" id="logoutBtn">Logout</button>
     </div>
 
     <script src="/js/dashboard.js"></script>
+    <script>
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>

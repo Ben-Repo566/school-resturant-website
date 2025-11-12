@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Potato Kingdom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/restaurant.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <img src="/images/logo.png" alt="Logo" class="nav-logo">
+            </a>
+            <button class="nav-toggle" id="navToggle">☰</button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/menu" class="nav-link">Menu</a></li>
+                <li><a href="/fun-facts" class="nav-link">Fun Facts</a></li>
+                <li><a href="/cart" class="nav-link active">Cart</a></li>
+                <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 80px 40px;">
+            <div class="header" style="margin-bottom: 80px;">
+                <h1 style="font-size: 64px; font-weight: 600; color: #121212; margin-bottom: 16px; letter-spacing: -0.03em; line-height: 1.1;">Shopping Cart</h1>
+                <p style="font-size: 20px; color: rgba(18, 18, 18, 0.6); letter-spacing: -0.01em;">Review your items and place your order</p>
+            </div>
+
+            <div id="cartContainer">
+                <div id="loadingMessage" style="text-align: center; padding: 80px; color: rgba(18, 18, 18, 0.6); font-size: 18px;">
+                    Loading cart...
+                </div>
+            </div>
+
+            <div id="emptyCart" style="display: none; text-align: center; padding: 80px;">
+                <p style="font-size: 24px; color: rgba(18, 18, 18, 0.4); margin-bottom: 32px;">Your cart is empty</p>
+                <a href="/menu" style="display: inline-block; padding: 16px 32px; background: #121212; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 500; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">Browse Menu</a>
+            </div>
+
+            <div id="cartItems" style="display: none;">
+                <div id="itemsList"></div>
+
+                <div style="border-top: 1px solid rgba(18, 18, 18, 0.1); margin-top: 40px; padding-top: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                        <h2 style="font-size: 32px; font-weight: 600; color: #121212; letter-spacing: -0.02em;">Total</h2>
+                        <span id="totalAmount" style="font-size: 36px; font-weight: 600; color: #09f; letter-spacing: -0.02em;">₪0</span>
+                    </div>
+                    <button id="placeOrderBtn" style="width: 100%; padding: 20px; background: #121212; color: #ffffff; border: none; border-radius: 6px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); letter-spacing: -0.01em;">
+                        Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/cart.js"></script>
+    <script>
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
