@@ -7,6 +7,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// Trigger rebuild for Railway database fix
 
 // Trust proxy - required for Railway/production environments
 app.set('trust proxy', 1);
