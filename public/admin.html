@@ -333,6 +333,201 @@
         .modal-btn-cancel:hover {
             background: rgba(18, 18, 18, 0.15);
         }
+
+        /* Tablet Styles */
+        @media (max-width: 1024px) {
+            .main-content {
+                padding: 60px 32px;
+            }
+
+            .header h1 {
+                font-size: 52px !important;
+            }
+
+            .stats-container {
+                gap: 32px;
+                margin-bottom: 60px;
+            }
+        }
+
+        /* Mobile Landscape & Small Tablets */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 48px 24px;
+            }
+
+            .admin-container {
+                max-width: 100%;
+            }
+
+            .header {
+                margin-bottom: 48px !important;
+            }
+
+            .header h1 {
+                font-size: 40px !important;
+                margin-bottom: 12px !important;
+            }
+
+            .header p {
+                font-size: 17px !important;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                margin-bottom: 48px;
+            }
+
+            .stat-card {
+                padding: 36px 28px;
+            }
+
+            .stat-card h3 {
+                font-size: 48px;
+            }
+
+            .stat-card p {
+                font-size: 15px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .search-box {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .refresh-btn {
+                width: 100%;
+                padding: 16px;
+            }
+
+            .table-container {
+                border-radius: 10px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            th, td {
+                padding: 16px 18px;
+                font-size: 14px;
+            }
+
+            th {
+                font-size: 12px;
+            }
+
+            .modal-content {
+                padding: 36px;
+                width: 95%;
+            }
+
+            .modal-header h2 {
+                font-size: 24px;
+            }
+
+            .modal-header p {
+                font-size: 15px;
+            }
+        }
+
+        /* Mobile Portrait */
+        @media (max-width: 640px) {
+            .main-content {
+                padding: 32px 20px;
+            }
+
+            .header h1 {
+                font-size: 32px !important;
+            }
+
+            .header p {
+                font-size: 16px !important;
+            }
+
+            .stat-card {
+                padding: 32px 24px;
+            }
+
+            .stat-card h3 {
+                font-size: 42px;
+            }
+
+            .stat-card p {
+                font-size: 14px;
+            }
+
+            .search-box {
+                padding: 14px 18px;
+                font-size: 14px;
+            }
+
+            .refresh-btn {
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 14px 16px;
+                font-size: 13px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .action-btn {
+                width: 100%;
+                padding: 10px 16px;
+                font-size: 11px;
+            }
+
+            .modal-content {
+                padding: 28px;
+            }
+
+            .modal-header {
+                margin-bottom: 24px;
+            }
+
+            .modal-header h2 {
+                font-size: 22px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+
+        /* Extra Small Mobile */
+        @media (max-width: 380px) {
+            .main-content {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 28px !important;
+            }
+
+            table {
+                min-width: 650px;
+            }
+        }
     </style>
 </head>
 <body>

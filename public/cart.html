@@ -10,6 +10,177 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/restaurant.css">
     <link rel="stylesheet" href="/css/animations.css">
+    <style>
+        /* Mobile Responsive Styles for Cart */
+        @media (max-width: 768px) {
+            div[style*="max-width: 1400px"] {
+                padding: 48px 24px !important;
+            }
+
+            .header h1 {
+                font-size: 40px !important;
+            }
+
+            .header p {
+                font-size: 17px !important;
+            }
+
+            .header {
+                margin-bottom: 48px !important;
+            }
+
+            #emptyCart p {
+                font-size: 20px !important;
+            }
+
+            #emptyCart a {
+                padding: 14px 28px !important;
+                font-size: 14px !important;
+            }
+
+            div[style*="border-top"] {
+                margin-top: 32px !important;
+                padding-top: 32px !important;
+            }
+
+            #totalAmount {
+                font-size: 28px !important;
+            }
+
+            h2[style*="font-size: 32px"] {
+                font-size: 26px !important;
+            }
+
+            #placeOrderBtn {
+                padding: 18px !important;
+                font-size: 15px !important;
+            }
+
+            /* Cart items */
+            #itemsList > div {
+                padding: 24px !important;
+                margin-bottom: 20px !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+
+            #itemsList h3 {
+                font-size: 22px !important;
+            }
+
+            #itemsList p {
+                font-size: 17px !important;
+            }
+
+            #itemsList > div > div:last-child {
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            #itemsList button[onclick*="removeItem"] {
+                padding: 12px 20px !important;
+                font-size: 13px !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            div[style*="max-width: 1400px"] {
+                padding: 32px 20px !important;
+            }
+
+            .header h1 {
+                font-size: 32px !important;
+            }
+
+            .header p {
+                font-size: 16px !important;
+            }
+
+            #emptyCart {
+                padding: 60px 20px !important;
+            }
+
+            #emptyCart p {
+                font-size: 18px !important;
+                margin-bottom: 24px !important;
+            }
+
+            #totalAmount {
+                font-size: 24px !important;
+            }
+
+            h2[style*="font-size: 32px"] {
+                font-size: 22px !important;
+            }
+
+            div[style*="display: flex; justify-content: space-between"] {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start !important;
+            }
+
+            #placeOrderBtn {
+                padding: 16px !important;
+                font-size: 14px !important;
+            }
+
+            /* Cart items mobile */
+            #itemsList > div {
+                padding: 20px !important;
+                margin-bottom: 16px !important;
+                border-radius: 10px !important;
+            }
+
+            #itemsList h3 {
+                font-size: 20px !important;
+                margin-bottom: 6px !important;
+            }
+
+            #itemsList p {
+                font-size: 16px !important;
+            }
+
+            #itemsList > div > div:last-child {
+                width: 100%;
+                flex-direction: column;
+                gap: 12px !important;
+            }
+
+            #itemsList > div > div:last-child > div {
+                justify-content: center;
+            }
+
+            #itemsList > div > div:last-child > span {
+                text-align: center !important;
+                font-size: 18px !important;
+            }
+
+            #itemsList button[onclick*="updateQuantity"] {
+                font-size: 18px !important;
+                padding: 6px 10px !important;
+            }
+
+            #itemsList button[onclick*="removeItem"] {
+                width: 100%;
+                padding: 14px !important;
+                font-size: 14px !important;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .header h1 {
+                font-size: 28px !important;
+            }
+
+            #itemsList h3 {
+                font-size: 18px !important;
+            }
+
+            #itemsList p {
+                font-size: 15px !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Bar -->

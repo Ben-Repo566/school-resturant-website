@@ -1,6 +1,9 @@
 # Environment variables
 .env
 
+# Test files
+cookies.txt
+
 # Node modules
 node_modules/
 

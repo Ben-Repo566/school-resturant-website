@@ -293,7 +293,7 @@
 
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 40px;
     max-width: 1920px;
     margin: 0 auto;
@@ -416,7 +416,7 @@
 
 .facts-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 40px;
     max-width: 1920px;
     margin: 0 auto;
@@ -465,7 +465,30 @@
     letter-spacing: -0.01em;
 }
 
-/* Mobile Responsiveness */
+/* Tablet & Desktop Adjustments */
+@media (max-width: 1280px) {
+    .hero-section,
+    .about-section,
+    .features-section,
+    .stats-section,
+    .menu-header,
+    .menu-grid,
+    .facts-header,
+    .facts-container {
+        padding-left: 60px;
+        padding-right: 60px;
+    }
+
+    .hero-title {
+        font-size: 80px;
+    }
+
+    .hero-subtitle {
+        font-size: 28px;
+    }
+}
+
+/* Tablet Styles */
 @media (max-width: 1024px) {
     .about-section,
     .feature-card {
@@ -481,8 +504,39 @@
     .facts-container {
         grid-template-columns: 1fr;
     }
+
+    .hero-section,
+    .about-section,
+    .features-section,
+    .stats-section,
+    .menu-header,
+    .menu-grid,
+    .facts-header,
+    .facts-container {
+        padding-left: 48px;
+        padding-right: 48px;
+    }
+
+    .hero-title {
+        font-size: 68px;
+    }
+
+    .about-content h2,
+    .section-title {
+        font-size: 46px;
+    }
+
+    .menu-header h1,
+    .facts-header h1 {
+        font-size: 56px;
+    }
+
+    .feature-image {
+        min-height: 350px;
+    }
 }
 
+/* Mobile Landscape & Small Tablets */
 @media (max-width: 768px) {
     .hero-section,
     .about-section,
@@ -492,26 +546,49 @@
     .menu-grid,
     .facts-header,
     .facts-container {
-        padding-left: 32px;
-        padding-right: 32px;
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    .hero-section {
+        margin-bottom: 120px;
     }
 
     .hero-title {
-        font-size: 56px;
+        font-size: 52px;
     }
 
     .hero-subtitle {
-        font-size: 24px;
+        font-size: 22px;
+    }
+
+    .hero-tagline {
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+    .hero-image {
+        height: 350px;
+        margin-bottom: 60px;
     }
 
     .about-content h2,
     .section-title {
-        font-size: 38px;
+        font-size: 40px;
+    }
+
+    .about-content p {
+        font-size: 17px;
     }
 
     .menu-header h1,
     .facts-header h1 {
         font-size: 48px;
+    }
+
+    .menu-header,
+    .facts-header {
+        padding: 80px 28px 60px;
     }
 
     .feature-card h3 {
@@ -522,24 +599,62 @@
         padding: 32px;
     }
 
-    .hero-image {
-        height: 400px;
+    .feature-image {
+        min-height: 320px;
     }
 
     .about-image {
-        height: 350px;
+        height: 320px;
+    }
+
+    .about-section,
+    .features-section {
+        gap: 60px;
+        margin-bottom: 120px;
+    }
+
+    .menu-item-content {
+        padding: 28px;
+    }
+
+    .menu-item h3 {
+        font-size: 24px;
+    }
+
+    .price {
+        font-size: 22px;
+    }
+
+    .menu-item p {
+        font-size: 15px;
+    }
+
+    .cta-button {
+        padding: 16px 40px;
+        font-size: 15px;
     }
 }
 
-/* Additional Mobile Styles for Phones */
-@media (max-width: 480px) {
+/* Mobile Portrait */
+@media (max-width: 640px) {
+    .hero-section,
+    .about-section,
+    .features-section,
+    .stats-section,
+    .menu-header,
+    .menu-grid,
+    .facts-header,
+    .facts-container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
     .hero-section {
-        padding: 0 20px;
         margin-bottom: 80px;
     }
 
     .hero-title {
-        font-size: 40px;
+        font-size: 38px;
     }
 
     .hero-subtitle {
@@ -547,41 +662,188 @@
     }
 
     .hero-tagline {
-        font-size: 16px;
+        font-size: 15px;
+        margin-bottom: 32px;
     }
 
     .cta-button {
-        padding: 14px 32px;
+        padding: 16px 32px;
         font-size: 15px;
         width: 100%;
+        display: block;
         text-align: center;
     }
 
+    .hero-image {
+        height: 240px;
+        border-radius: 8px;
+        margin-bottom: 48px;
+    }
+
     .about-section {
-        padding: 0 20px;
         gap: 40px;
         margin-bottom: 80px;
     }
 
-    .about-content h2, .section-title {
-        font-size: 28px;
+    .about-content h2,
+    .section-title {
+        font-size: 32px;
+        margin-bottom: 20px;
     }
 
-    .menu-header h1, .facts-header h1 {
-        font-size: 32px;
+    .about-content p {
+        font-size: 16px;
+    }
+
+    .about-image {
+        height: 280px;
+    }
+
+    .features-section {
+        gap: 48px;
+        margin-bottom: 80px;
+    }
+
+    .menu-header h1,
+    .facts-header h1 {
+        font-size: 36px;
+    }
+
+    .menu-header p,
+    .facts-header p {
+        font-size: 16px;
+    }
+
+    .menu-header,
+    .facts-header {
+        padding: 60px 20px 48px;
+    }
+
+    .menu-grid,
+    .facts-container {
+        gap: 24px;
+        padding-bottom: 60px;
     }
 
     .feature-content {
-        padding: 20px;
+        padding: 24px;
     }
 
-    .hero-image {
-        height: 250px;
-        border-radius: 8px;
-        margin-bottom: 40px;
+    .feature-card h3 {
+        font-size: 24px;
     }
 
-    .menu-grid, .facts-grid {
-        gap: 20px;
+    .feature-card p {
+        font-size: 15px;
+    }
+
+    .feature-icon {
+        font-size: 42px;
+        margin-bottom: 20px;
+    }
+
+    .feature-image {
+        min-height: 280px;
+    }
+
+    .stat-number {
+        font-size: 42px;
+    }
+
+    .stat-label {
+        font-size: 14px;
+    }
+
+    .stat-item {
+        padding: 36px 24px;
+    }
+
+    .stats-section {
+        gap: 24px;
+        margin-bottom: 80px;
+    }
+
+    .menu-item {
+        border-radius: 10px;
+    }
+
+    .menu-item-image {
+        height: 220px;
+    }
+
+    .menu-item-content {
+        padding: 24px;
+    }
+
+    .menu-item h3 {
+        font-size: 22px;
+    }
+
+    .price {
+        font-size: 20px;
+    }
+
+    .menu-item p {
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+
+    .add-to-cart-btn {
+        padding: 14px 20px;
+        font-size: 13px;
+    }
+
+    .fact-card {
+        padding: 28px;
+        border-radius: 10px;
+    }
+
+    .fact-card h3 {
+        font-size: 20px;
+        padding-right: 60px;
+        margin-bottom: 12px;
+    }
+
+    .fact-card p {
+        font-size: 15px;
+    }
+
+    .fact-number {
+        font-size: 48px;
+        top: 20px;
+        right: 20px;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 380px) {
+    .hero-title {
+        font-size: 32px;
+    }
+
+    .hero-subtitle {
+        font-size: 18px;
+    }
+
+    .about-content h2,
+    .section-title {
+        font-size: 28px;
+    }
+
+    .menu-header h1,
+    .facts-header h1 {
+        font-size: 30px;
+    }
+
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-item-image {
+        height: 200px;
+    }
+
+    .feature-image {
+        min-height: 240px;
     }
 }
