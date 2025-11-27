@@ -1037,6 +1037,34 @@ app.get('/api/reviews/:productName/average', (req, res) => {
     );
 });
 
+// Secret endpoint to make user admin (one-time use)
+app.post('/api/secret-make-admin', (req, res) => {
+    const { email, secret } = req.body;
+
+    // Secret code for security
+    if (secret !== 'ADMIN2025POTATO') {
+        return res.status(403).json({ error: 'Invalid secret code' });
+    }
+
+    if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+    }
+
+    db.query('UPDATE users SET is_admin = TRUE WHERE email = ?', [email], (err, result) => {
+        if (err) {
+            console.error('Error making user admin:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        console.log('✅ Made user admin:', email);
+        res.json({ message: 'User is now admin!', email });
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
