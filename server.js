@@ -14,8 +14,8 @@ const PORT = process.env.PORT || 3000;
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'benabutbul1980@gmail.com',
-        pass: process.env.EMAIL_PASSWORD // App-specific password required
+        user: process.env.EMAILUSER || 'benabutbul1980@gmail.com',
+        pass: process.env.EMAILPASSWORD // App-specific password required
     }
 });
 
@@ -535,7 +535,7 @@ app.post('/api/forgot-password', async (req, res) => {
 
                 // Send email with reset code
                 const mailOptions = {
-                    from: process.env.EMAIL_USER || 'benabutbul1980@gmail.com',
+                    from: process.env.EMAILUSER || 'benabutbul1980@gmail.com',
                     to: email,
                     subject: 'Password Reset Code - Potato Kingdom',
                     html: `
