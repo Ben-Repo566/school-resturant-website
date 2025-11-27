@@ -448,6 +448,76 @@ body {
     user-select: none;
 }
 
+/* Password requirements styles */
+.password-requirements {
+    margin-top: 12px;
+    padding: 16px;
+    background: rgba(18, 18, 18, 0.02);
+    border-radius: 6px;
+    border: 1px solid rgba(18, 18, 18, 0.08);
+}
+
+.requirements-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #121212;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+.requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.requirement {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    color: rgba(18, 18, 18, 0.6);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.requirement-icon {
+    font-size: 12px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(196, 30, 58, 0.1);
+    color: #c41e3a;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.requirement.met {
+    color: #1e7e34;
+}
+
+.requirement.met .requirement-icon {
+    background: rgba(30, 126, 52, 0.1);
+    color: #1e7e34;
+}
+
+/* Admin badge */
+.admin-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #09f 0%, #0066cc 100%);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 8px rgba(0, 153, 255, 0.2);
+}
+
 .btn {
     width: 100%;
     padding: 16px;

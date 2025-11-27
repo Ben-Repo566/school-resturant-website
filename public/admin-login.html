@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Potato Kingdom</title>
+    <title>Admin Login - Potato Kingdom</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -23,8 +23,7 @@
                 <li><a href="/" class="nav-link">Home</a></li>
                 <li><a href="/menu" class="nav-link">Menu</a></li>
                 <li><a href="/fun-facts" class="nav-link">Fun Facts</a></li>
-                <li><a href="/login" class="nav-link active">Login</a></li>
-                <li><a href="/register" class="nav-link">Register</a></li>
+                <li><a href="/login" class="nav-link">User Login</a></li>
             </ul>
         </div>
     </nav>
@@ -33,20 +32,21 @@
     <div class="main-content">
         <div class="container">
             <div class="header">
-                <h1>Welcome Back</h1>
-                <p>Login to your account</p>
+                <div class="admin-badge">🔐 Admin Access</div>
+                <h1>Administrator Login</h1>
+                <p>Restricted access for administrators only</p>
             </div>
 
             <div id="alertBox"></div>
 
-            <form id="loginForm">
+            <form id="adminLoginForm">
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <label for="email">Admin Email</label>
+                    <input type="email" id="email" name="email" required autofocus>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">Admin Password</label>
                     <div class="password-input-wrapper">
                         <input type="password" id="password" name="password" required>
                         <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password">
@@ -55,20 +55,16 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn btn-admin">Login as Administrator</button>
             </form>
 
             <div class="link-text">
-                Don't have an account? <a href="/register">Register here</a>
-            </div>
-
-            <div class="link-text" style="margin-top: 12px;">
-                <a href="/admin-login" style="color: #09f;">🔐 Admin Login</a>
+                <a href="/login">← Back to User Login</a>
             </div>
         </div>
     </div>
 
-    <script src="/js/login.js"></script>
+    <script src="/js/admin-login.js"></script>
     <script>
         // Mobile menu toggle
         const navToggle = document.getElementById('navToggle');

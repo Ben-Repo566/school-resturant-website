@@ -116,9 +116,49 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
+// Password requirements validation
+const passwordInput = document.getElementById('password');
+const requirements = {
+    length: document.getElementById('req-length'),
+    lowercase: document.getElementById('req-lowercase'),
+    uppercase: document.getElementById('req-uppercase'),
+    number: document.getElementById('req-number')
+};
+
+function validatePasswordRequirements(password) {
+    // Check each requirement
+    const hasLength = password.length >= 8;
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    // Update UI for each requirement
+    updateRequirement(requirements.length, hasLength);
+    updateRequirement(requirements.lowercase, hasLowercase);
+    updateRequirement(requirements.uppercase, hasUppercase);
+    updateRequirement(requirements.number, hasNumber);
+
+    return hasLength && hasLowercase && hasUppercase && hasNumber;
+}
+
+function updateRequirement(element, isMet) {
+    const icon = element.querySelector('.requirement-icon');
+    if (isMet) {
+        element.classList.add('met');
+        icon.textContent = '✓';
+    } else {
+        element.classList.remove('met');
+        icon.textContent = '✗';
+    }
+}
+
+// Real-time password validation
+passwordInput.addEventListener('input', () => {
+    validatePasswordRequirements(passwordInput.value);
+});
+
 // Password visibility toggles
 const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('password');
 
 togglePassword.addEventListener('click', () => {
     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';

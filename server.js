@@ -397,6 +397,74 @@ app.post('/api/logout', (req, res) => {
     res.json({ message: 'Logout successful' });
 });
 
+// Change password endpoint
+app.post('/api/change-password', requireAuth, (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.session.userId;
+
+    // Validate inputs
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: 'Please provide both current and new password' });
+    }
+
+    // Validate new password strength
+    if (newPassword.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one lowercase letter' });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one uppercase letter' });
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one number' });
+    }
+
+    // Get current user
+    db.query('SELECT * FROM users WHERE id = ?', [userId], async (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = results[0];
+
+        // Verify current password
+        const validPassword = await bcrypt.compare(currentPassword, user.password);
+
+        if (!validPassword) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        // Check if new password is same as current
+        const samePassword = await bcrypt.compare(newPassword, user.password);
+        if (samePassword) {
+            return res.status(400).json({ error: 'New password must be different from current password' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password in database
+        db.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, userId], (err) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Failed to update password' });
+            }
+
+            res.json({ message: 'Password changed successfully' });
+        });
+    });
+});
+
 // Get CSRF token endpoint
 app.get('/api/csrf-token', (req, res) => {
     if (!req.session.csrfToken) {
