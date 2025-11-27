@@ -267,6 +267,25 @@ db.getConnection((err, connection) => {
         if (err) console.error('Error creating password_resets table:', err);
         else console.log('Password resets table ready');
     });
+
+    // Add is_admin column to users table if it doesn't exist (migration)
+    db.query('SHOW COLUMNS FROM users LIKE "is_admin"', (err, results) => {
+        if (err) {
+            console.error('Error checking for is_admin column:', err);
+            return;
+        }
+
+        if (results.length === 0) {
+            // Column doesn't exist, add it
+            db.query('ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE', (err) => {
+                if (err) {
+                    console.error('Error adding is_admin column:', err);
+                } else {
+                    console.log('✅ Added is_admin column to users table');
+                }
+            });
+        }
+    });
 });
 
 // Routes
