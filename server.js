@@ -4,20 +4,18 @@ const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const path = require('path');
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 // Trigger rebuild for Railway database fix
 
-// Email configuration using nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAILUSER || 'benabutbul1980@gmail.com',
-        pass: process.env.EMAILPASSWORD // App-specific password required
-    }
-});
+// Email configuration using SendGrid
+if (process.env.SENDGRIDAPIKEY) {
+    sgMail.setApiKey(process.env.SENDGRIDAPIKEY);
+} else {
+    console.warn('⚠️  SENDGRIDAPIKEY not set - email functionality will be limited');
+}
 
 // Trust proxy - required for Railway/production environments
 app.set('trust proxy', 1);
@@ -533,10 +531,10 @@ app.post('/api/forgot-password', async (req, res) => {
                     return res.status(500).json({ error: 'Failed to generate reset code' });
                 }
 
-                // Send email with reset code
-                const mailOptions = {
-                    from: process.env.EMAILUSER || 'benabutbul1980@gmail.com',
+                // Send email with reset code using SendGrid
+                const msg = {
                     to: email,
+                    from: process.env.EMAILUSER || 'benabutbul1980@gmail.com',
                     subject: 'Password Reset Code - Potato Kingdom',
                     html: `
                         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -559,9 +557,17 @@ app.post('/api/forgot-password', async (req, res) => {
                     `
                 };
 
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
+                // Send email with SendGrid
+                sgMail.send(msg)
+                    .then(() => {
+                        console.log('✅ Password reset email sent successfully to:', email);
+                        res.json({ message: 'Reset code has been sent to your email' });
+                    })
+                    .catch((error) => {
                         console.error('Error sending email:', error);
+                        if (error.response) {
+                            console.error('SendGrid error details:', error.response.body);
+                        }
                         // Still log to console as fallback
                         console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
                         console.log('🔑 PASSWORD RESET CODE (Email failed)');
@@ -571,15 +577,11 @@ app.post('/api/forgot-password', async (req, res) => {
                         console.log(`Expires: ${expiresAt.toLocaleString()}`);
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
                         // Return success anyway so user can proceed (code is in logs)
-                        return res.json({
+                        res.json({
                             message: 'Reset code generated. Check server logs for code (email delivery issue).',
                             devMode: true
                         });
-                    }
-
-                    console.log('✅ Password reset email sent successfully to:', email);
-                    res.json({ message: 'Reset code has been sent to your email' });
-                });
+                    });
             }
         );
     });
