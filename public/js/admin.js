@@ -84,6 +84,7 @@ function displayUsers(users) {
                 <div class="action-buttons">
                     <button class="action-btn btn-update" data-user-id="${user.id}" data-username="${escapeHtml(user.username)}" data-email="${escapeHtml(user.email)}">Update</button>
                     <button class="action-btn btn-delete" data-user-id="${user.id}" data-username="${escapeHtml(user.username)}">Delete</button>
+                    <button class="action-btn" style="background: #09f; color: #fff;" data-user-id="${user.id}" data-username="${escapeHtml(user.username)}" class="btn-change-password">Change Password</button>
                     <button class="action-btn btn-toggle ${hideButtonClass}" data-user-id="${user.id}">${hideButtonText}</button>
                 </div>
             </td>
@@ -309,9 +310,129 @@ document.getElementById('usersTableBody').addEventListener('click', (e) => {
         const userId = parseInt(target.getAttribute('data-user-id'));
         const username = target.getAttribute('data-username');
         openDeleteModal(userId, username);
+    } else if (target.classList.contains('btn-change-password')) {
+        const userId = parseInt(target.getAttribute('data-user-id'));
+        const username = target.getAttribute('data-username');
+        openChangePasswordModal(userId, username);
     } else if (target.classList.contains('btn-toggle')) {
         const userId = parseInt(target.getAttribute('data-user-id'));
         toggleUserVisibility(userId);
+    }
+});
+
+// Change Password Modal Functions
+let userToChangePassword = null;
+
+function openChangePasswordModal(userId, username) {
+    userToChangePassword = userId;
+    document.getElementById('changePasswordUserInfo').textContent = `Changing password for: ${username} (ID: ${userId})`;
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('changePasswordModal').classList.add('active');
+
+    // Reset password requirements UI
+    const requirements = {
+        length: document.getElementById('req-length'),
+        lowercase: document.getElementById('req-lowercase'),
+        uppercase: document.getElementById('req-uppercase'),
+        number: document.getElementById('req-number')
+    };
+
+    Object.values(requirements).forEach(req => {
+        req.style.color = 'rgba(18, 18, 18, 0.5)';
+        const icon = req.querySelector('.requirement-icon');
+        icon.textContent = '✗';
+        icon.style.background = 'rgba(18, 18, 18, 0.1)';
+        icon.style.color = 'rgba(18, 18, 18, 0.5)';
+    });
+}
+
+function closeChangePasswordModal() {
+    document.getElementById('changePasswordModal').classList.remove('active');
+    userToChangePassword = null;
+}
+
+// Password validation
+function validatePasswordRequirements(password) {
+    const requirements = {
+        length: { element: document.getElementById('req-length'), test: password.length >= 8 },
+        lowercase: { element: document.getElementById('req-lowercase'), test: /[a-z]/.test(password) },
+        uppercase: { element: document.getElementById('req-uppercase'), test: /[A-Z]/.test(password) },
+        number: { element: document.getElementById('req-number'), test: /[0-9]/.test(password) }
+    };
+
+    let allMet = true;
+    Object.values(requirements).forEach(req => {
+        const icon = req.element.querySelector('.requirement-icon');
+        if (req.test) {
+            req.element.style.color = '#1e7e34';
+            icon.textContent = '✓';
+            icon.style.background = 'rgba(30, 126, 52, 0.1)';
+            icon.style.color = '#1e7e34';
+        } else {
+            req.element.style.color = 'rgba(18, 18, 18, 0.5)';
+            icon.textContent = '✗';
+            icon.style.background = 'rgba(18, 18, 18, 0.1)';
+            icon.style.color = 'rgba(18, 18, 18, 0.5)';
+            allMet = false;
+        }
+    });
+
+    return allMet;
+}
+
+// Real-time password validation
+document.getElementById('newPassword').addEventListener('input', (e) => {
+    validatePasswordRequirements(e.target.value);
+});
+
+// Cancel button for password modal
+document.getElementById('closePasswordModalBtn').addEventListener('click', closeChangePasswordModal);
+
+// Handle change password form submission
+document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Validate password requirements
+    if (!validatePasswordRequirements(newPassword)) {
+        alert('Password does not meet requirements');
+        return;
+    }
+
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+
+    try {
+        const csrfToken = await getCsrfToken();
+        const response = await fetch('/api/admin/change-user-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({
+                userId: userToChangePassword,
+                newPassword: newPassword
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Password changed successfully!');
+            closeChangePasswordModal();
+        } else {
+            alert(data.error || 'Failed to change password');
+        }
+    } catch (error) {
+        console.error('Error changing password:', error);
+        alert('Error changing password. Please try again.');
     }
 });
 

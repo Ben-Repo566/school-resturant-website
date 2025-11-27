@@ -1084,6 +1084,53 @@ app.post('/api/secret-make-admin', (req, res) => {
     });
 });
 
+// Admin endpoint to change user password
+app.post('/api/admin/change-user-password', requireAdmin, async (req, res) => {
+    const { userId, newPassword } = req.body;
+
+    if (!userId || !newPassword) {
+        return res.status(400).json({ error: 'User ID and new password are required' });
+    }
+
+    // Validate password requirements
+    if (newPassword.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one lowercase letter' });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one uppercase letter' });
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one number' });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        db.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, userId], (err, result) => {
+            if (err) {
+                console.error('Error changing user password:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            console.log(`✅ Admin ${req.session.userId} changed password for user ${userId}`);
+            res.json({ message: 'Password changed successfully' });
+        });
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

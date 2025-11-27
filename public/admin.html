@@ -633,6 +633,51 @@
         </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Change User Password</h2>
+                <p id="changePasswordUserInfo"></p>
+            </div>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" class="search-box" required minlength="8">
+                    <div class="password-requirements" id="passwordRequirements" style="margin-top: 16px; padding: 16px; background: rgba(18, 18, 18, 0.02); border-radius: 8px;">
+                        <p class="requirements-title" style="font-size: 13px; font-weight: 500; color: rgba(18, 18, 18, 0.7); margin-bottom: 12px;">Password must contain:</p>
+                        <ul class="requirements-list" style="list-style: none; padding: 0; margin: 0;">
+                            <li id="req-length" class="requirement" style="font-size: 13px; color: rgba(18, 18, 18, 0.5); margin-bottom: 8px;">
+                                <span class="requirement-icon" style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(18, 18, 18, 0.1); color: rgba(18, 18, 18, 0.5); text-align: center; line-height: 18px; font-size: 11px; margin-right: 8px;">✗</span>
+                                <span>At least 8 characters</span>
+                            </li>
+                            <li id="req-lowercase" class="requirement" style="font-size: 13px; color: rgba(18, 18, 18, 0.5); margin-bottom: 8px;">
+                                <span class="requirement-icon" style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(18, 18, 18, 0.1); color: rgba(18, 18, 18, 0.5); text-align: center; line-height: 18px; font-size: 11px; margin-right: 8px;">✗</span>
+                                <span>One lowercase letter (a-z)</span>
+                            </li>
+                            <li id="req-uppercase" class="requirement" style="font-size: 13px; color: rgba(18, 18, 18, 0.5); margin-bottom: 8px;">
+                                <span class="requirement-icon" style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(18, 18, 18, 0.1); color: rgba(18, 18, 18, 0.5); text-align: center; line-height: 18px; font-size: 11px; margin-right: 8px;">✗</span>
+                                <span>One uppercase letter (A-Z)</span>
+                            </li>
+                            <li id="req-number" class="requirement" style="font-size: 13px; color: rgba(18, 18, 18, 0.5);">
+                                <span class="requirement-icon" style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(18, 18, 18, 0.1); color: rgba(18, 18, 18, 0.5); text-align: center; line-height: 18px; font-size: 11px; margin-right: 8px;">✗</span>
+                                <span>One number (0-9)</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" class="search-box" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn modal-btn-cancel" id="closePasswordModalBtn">Cancel</button>
+                    <button type="submit" class="modal-btn" style="background: #1a1a1a; color: #ffffff;">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="/js/navbar-auth.js"></script>
     <script src="/js/admin.js"></script>
     <script>
