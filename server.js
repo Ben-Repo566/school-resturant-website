@@ -114,9 +114,9 @@ const csrfProtection = (req, res, next) => {
         return next();
     }
 
-    // Skip CSRF for register, login, and password reset endpoints
+    // Skip CSRF for register, login, password reset, and admin setup endpoints
     // Note: req.path doesn't include the /api prefix when middleware is mounted on /api
-    const skipCSRFPaths = ['/register', '/login', '/forgot-password', '/verify-reset-code', '/reset-password'];
+    const skipCSRFPaths = ['/register', '/login', '/forgot-password', '/verify-reset-code', '/reset-password', '/secret-make-admin'];
     if (skipCSRFPaths.includes(req.path)) {
         return next();
     }
