@@ -570,7 +570,11 @@ app.post('/api/forgot-password', async (req, res) => {
                         console.log(`Code: ${resetCode}`);
                         console.log(`Expires: ${expiresAt.toLocaleString()}`);
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-                        return res.status(500).json({ error: 'Failed to send email' });
+                        // Return success anyway so user can proceed (code is in logs)
+                        return res.json({
+                            message: 'Reset code generated. Check server logs for code (email delivery issue).',
+                            devMode: true
+                        });
                     }
 
                     console.log('✅ Password reset email sent successfully to:', email);
