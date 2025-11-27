@@ -107,7 +107,8 @@ const csrfProtection = (req, res, next) => {
     }
 
     // Skip CSRF for register and login endpoints
-    if (req.path === '/api/register' || req.path === '/api/login') {
+    // Note: req.path doesn't include the /api prefix when middleware is mounted on /api
+    if (req.path === '/register' || req.path === '/login') {
         return next();
     }
 
