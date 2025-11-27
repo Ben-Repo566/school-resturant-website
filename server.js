@@ -106,9 +106,10 @@ const csrfProtection = (req, res, next) => {
         return next();
     }
 
-    // Skip CSRF for register and login endpoints
+    // Skip CSRF for register, login, and password reset endpoints
     // Note: req.path doesn't include the /api prefix when middleware is mounted on /api
-    if (req.path === '/register' || req.path === '/login') {
+    const skipCSRFPaths = ['/register', '/login', '/forgot-password', '/verify-reset-code', '/reset-password'];
+    if (skipCSRFPaths.includes(req.path)) {
         return next();
     }
 
@@ -239,6 +240,24 @@ db.getConnection((err, connection) => {
     db.query(createReviewsTable, (err) => {
         if (err) console.error('Error creating reviews table:', err);
         else console.log('Reviews table ready');
+    });
+
+    // Create password_resets table
+    const createPasswordResetsTable = `
+        CREATE TABLE IF NOT EXISTS password_resets (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(100) NOT NULL,
+            reset_code VARCHAR(6) NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX (email),
+            INDEX (reset_code)
+        )
+    `;
+
+    db.query(createPasswordResetsTable, (err) => {
+        if (err) console.error('Error creating password_resets table:', err);
+        else console.log('Password resets table ready');
     });
 });
 
@@ -463,6 +482,156 @@ app.post('/api/change-password', requireAuth, (req, res) => {
             res.json({ message: 'Password changed successfully' });
         });
     });
+});
+
+// Forgot password - send reset code
+app.post('/api/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Check if user exists
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            // Don't reveal if email exists or not for security
+            return res.json({ message: 'If that email exists, a reset code has been sent' });
+        }
+
+        // Generate 6-digit code
+        const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+        // Delete any existing reset codes for this email
+        db.query('DELETE FROM password_resets WHERE email = ?', [email], (err) => {
+            if (err) console.error('Error deleting old reset codes:', err);
+        });
+
+        // Store reset code
+        db.query(
+            'INSERT INTO password_resets (email, reset_code, expires_at) VALUES (?, ?, ?)',
+            [email, resetCode, expiresAt],
+            (err) => {
+                if (err) {
+                    console.error('Error storing reset code:', err);
+                    return res.status(500).json({ error: 'Failed to generate reset code' });
+                }
+
+                // For development: log the code (in production, send via email)
+                console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                console.log('🔑 PASSWORD RESET CODE');
+                console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                console.log(`Email: ${email}`);
+                console.log(`Code: ${resetCode}`);
+                console.log(`Expires: ${expiresAt.toLocaleString()}`);
+                console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
+                // In production, you would send email here
+                // For now, we just return success
+                res.json({
+                    message: 'If that email exists, a reset code has been sent',
+                    // For development only - remove in production
+                    devCode: resetCode
+                });
+            }
+        );
+    });
+});
+
+// Verify reset code
+app.post('/api/verify-reset-code', (req, res) => {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+        return res.status(400).json({ error: 'Email and code are required' });
+    }
+
+    db.query(
+        'SELECT * FROM password_resets WHERE email = ? AND reset_code = ? AND expires_at > NOW()',
+        [email, code],
+        (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            if (results.length === 0) {
+                return res.status(400).json({ error: 'Invalid or expired reset code' });
+            }
+
+            res.json({ message: 'Code verified successfully' });
+        }
+    );
+});
+
+// Reset password with code
+app.post('/api/reset-password', async (req, res) => {
+    const { email, code, newPassword } = req.body;
+
+    if (!email || !code || !newPassword) {
+        return res.status(400).json({ error: 'Email, code, and new password are required' });
+    }
+
+    // Validate new password strength
+    if (newPassword.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one lowercase letter' });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one uppercase letter' });
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must contain at least one number' });
+    }
+
+    // Verify reset code
+    db.query(
+        'SELECT * FROM password_resets WHERE email = ? AND reset_code = ? AND expires_at > NOW()',
+        [email, code],
+        async (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            if (results.length === 0) {
+                return res.status(400).json({ error: 'Invalid or expired reset code' });
+            }
+
+            // Hash new password
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+            // Update user password
+            db.query(
+                'UPDATE users SET password = ? WHERE email = ?',
+                [hashedPassword, email],
+                (err) => {
+                    if (err) {
+                        console.error('Error updating password:', err);
+                        return res.status(500).json({ error: 'Failed to reset password' });
+                    }
+
+                    // Delete used reset code
+                    db.query('DELETE FROM password_resets WHERE email = ?', [email], (err) => {
+                        if (err) console.error('Error deleting reset code:', err);
+                    });
+
+                    res.json({ message: 'Password reset successfully' });
+                }
+            );
+        }
+    );
 });
 
 // Get CSRF token endpoint
