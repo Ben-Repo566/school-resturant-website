@@ -557,11 +557,14 @@ app.post('/api/change-password', requireAuth, (req, res) => {
 
 // Forgot password - send reset code
 app.post('/api/forgot-password', async (req, res) => {
-    const { email } = req.body;
+    let { email } = req.body;
 
     if (!email) {
         return res.status(400).json({ error: 'Email is required' });
     }
+
+    // Trim and lowercase email
+    email = email.trim().toLowerCase();
 
     // Check if user exists
     db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
@@ -667,11 +670,17 @@ app.post('/api/forgot-password', async (req, res) => {
 
 // Verify reset code
 app.post('/api/verify-reset-code', (req, res) => {
-    const { email, code } = req.body;
+    let { email, code } = req.body;
 
     if (!email || !code) {
         return res.status(400).json({ error: 'Email and code are required' });
     }
+
+    // Trim whitespace from inputs
+    email = email.trim().toLowerCase();
+    code = code.trim();
+
+    console.log(`🔍 Verifying reset code for email: ${email}, code: ${code}`);
 
     db.query(
         'SELECT * FROM password_resets WHERE email = ? AND reset_code = ? AND expires_at > NOW()',
@@ -683,21 +692,39 @@ app.post('/api/verify-reset-code', (req, res) => {
             }
 
             if (results.length === 0) {
-                return res.status(400).json({ error: 'Invalid or expired reset code' });
+                // Debug: Check if code exists but expired
+                db.query(
+                    'SELECT * FROM password_resets WHERE email = ? AND reset_code = ?',
+                    [email, code],
+                    (err2, results2) => {
+                        if (results2 && results2.length > 0) {
+                            console.log('❌ Code found but expired:', results2[0].expires_at);
+                            return res.status(400).json({ error: 'Reset code has expired. Please request a new one.' });
+                        } else {
+                            console.log('❌ Code not found for email:', email);
+                            return res.status(400).json({ error: 'Invalid reset code' });
+                        }
+                    }
+                );
+            } else {
+                console.log('✅ Code verified successfully for:', email);
+                res.json({ message: 'Code verified successfully' });
             }
-
-            res.json({ message: 'Code verified successfully' });
         }
     );
 });
 
 // Reset password with code
 app.post('/api/reset-password', async (req, res) => {
-    const { email, code, newPassword } = req.body;
+    let { email, code, newPassword } = req.body;
 
     if (!email || !code || !newPassword) {
         return res.status(400).json({ error: 'Email, code, and new password are required' });
     }
+
+    // Trim whitespace from inputs
+    email = email.trim().toLowerCase();
+    code = code.trim();
 
     // Validate new password strength
     if (newPassword.length < 8) {
