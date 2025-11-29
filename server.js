@@ -5,27 +5,43 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Email configuration using Gmail SMTP
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD
-    }
-});
+// Email configuration - Auto-detect: Resend (Railway) or Gmail (Local)
+let emailService = 'none';
+let transporter = null;
+let resend = null;
 
-// Verify email configuration on startup
-transporter.verify(function(error, success) {
-    if (error) {
-        console.log('⚠️  Email configuration error:', error.message);
-    } else {
-        console.log('✅ Email server is ready to send messages');
-    }
-});
+if (process.env.RESEND_API_KEY) {
+    // Use Resend (for Railway - no SMTP blocking)
+    resend = new Resend(process.env.RESEND_API_KEY);
+    emailService = 'resend';
+    console.log('📧 Using Resend for email delivery');
+} else if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    // Use Gmail SMTP (for local development)
+    transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_APP_PASSWORD
+        }
+    });
+    emailService = 'gmail';
+
+    // Verify Gmail configuration on startup
+    transporter.verify(function(error, success) {
+        if (error) {
+            console.log('⚠️  Email configuration error:', error.message);
+        } else {
+            console.log('✅ Email server is ready to send messages (Gmail)');
+        }
+    });
+} else {
+    console.warn('⚠️  No email service configured - emails will be logged to console');
+}
 
 // Trust proxy - required for Railway/production environments
 app.set('trust proxy', 1);
@@ -578,36 +594,54 @@ app.post('/api/forgot-password', async (req, res) => {
                     return res.status(500).json({ error: 'Failed to generate reset code' });
                 }
 
-                // Send email with Gmail SMTP
-                const mailOptions = {
-                    from: `"Potato Kingdom" <${process.env.GMAIL_USER}>`,
-                    to: email,
-                    subject: 'Password Reset Code - Potato Kingdom',
-                    html: `
-                        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-                                <h1 style="color: white; margin: 0; font-size: 28px;">Password Reset</h1>
-                            </div>
-                            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 12px 12px;">
-                                <p style="color: #333; font-size: 16px; line-height: 1.6;">Hi there,</p>
-                                <p style="color: #333; font-size: 16px; line-height: 1.6;">You requested to reset your password for Potato Kingdom. Use the code below to complete the process:</p>
-                                <div style="background: white; border: 2px solid #09f; border-radius: 8px; padding: 20px; text-align: center; margin: 25px 0;">
-                                    <p style="color: #666; font-size: 14px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">Your Reset Code</p>
-                                    <p style="font-size: 36px; font-weight: 600; color: #09f; margin: 0; letter-spacing: 4px; font-family: 'Courier New', monospace;">${resetCode}</p>
-                                </div>
-                                <p style="color: #666; font-size: 14px; line-height: 1.6;">This code will expire in <strong>15 minutes</strong>.</p>
-                                <p style="color: #666; font-size: 14px; line-height: 1.6;">If you didn't request this password reset, please ignore this email.</p>
-                                <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
-                                <p style="color: #999; font-size: 12px; line-height: 1.6; text-align: center;">Potato Kingdom Restaurant<br>This is an automated message, please do not reply.</p>
-                            </div>
+                // Email HTML template
+                const emailHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+                            <h1 style="color: white; margin: 0; font-size: 28px;">Password Reset</h1>
                         </div>
-                    `
-                };
+                        <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 12px 12px;">
+                            <p style="color: #333; font-size: 16px; line-height: 1.6;">Hi there,</p>
+                            <p style="color: #333; font-size: 16px; line-height: 1.6;">You requested to reset your password for Potato Kingdom. Use the code below to complete the process:</p>
+                            <div style="background: white; border: 2px solid #09f; border-radius: 8px; padding: 20px; text-align: center; margin: 25px 0;">
+                                <p style="color: #666; font-size: 14px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">Your Reset Code</p>
+                                <p style="font-size: 36px; font-weight: 600; color: #09f; margin: 0; letter-spacing: 4px; font-family: 'Courier New', monospace;">${resetCode}</p>
+                            </div>
+                            <p style="color: #666; font-size: 14px; line-height: 1.6;">This code will expire in <strong>15 minutes</strong>.</p>
+                            <p style="color: #666; font-size: 14px; line-height: 1.6;">If you didn't request this password reset, please ignore this email.</p>
+                            <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
+                            <p style="color: #999; font-size: 12px; line-height: 1.6; text-align: center;">Potato Kingdom Restaurant<br>This is an automated message, please do not reply.</p>
+                        </div>
+                    </div>
+                `;
 
-                // Send email with Gmail
-                transporter.sendMail(mailOptions)
+                // Send email using appropriate service
+                let emailPromise;
+
+                if (emailService === 'resend') {
+                    // Use Resend
+                    emailPromise = resend.emails.send({
+                        from: 'Potato Kingdom <onboarding@resend.dev>',
+                        to: email,
+                        subject: 'Password Reset Code - Potato Kingdom',
+                        html: emailHtml
+                    });
+                } else if (emailService === 'gmail') {
+                    // Use Gmail SMTP
+                    emailPromise = transporter.sendMail({
+                        from: `"Potato Kingdom" <${process.env.GMAIL_USER}>`,
+                        to: email,
+                        subject: 'Password Reset Code - Potato Kingdom',
+                        html: emailHtml
+                    });
+                } else {
+                    // No email service configured - just log to console
+                    emailPromise = Promise.reject(new Error('No email service configured'));
+                }
+
+                emailPromise
                     .then(() => {
-                        console.log('✅ Password reset email sent successfully to:', email);
+                        console.log(`✅ Password reset email sent successfully to: ${email} (via ${emailService})`);
                         res.json({ message: 'Reset code has been sent to your email' });
                     })
                     .catch((error) => {
