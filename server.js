@@ -4,18 +4,28 @@ const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const path = require('path');
-const sgMail = require('@sendgrid/mail');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-// Trigger rebuild for Railway database fix
 
-// Email configuration using SendGrid
-if (process.env.SENDGRIDAPIKEY) {
-    sgMail.setApiKey(process.env.SENDGRIDAPIKEY);
-} else {
-    console.warn('⚠️  SENDGRIDAPIKEY not set - email functionality will be limited');
-}
+// Email configuration using Gmail SMTP
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD
+    }
+});
+
+// Verify email configuration on startup
+transporter.verify(function(error, success) {
+    if (error) {
+        console.log('⚠️  Email configuration error:', error.message);
+    } else {
+        console.log('✅ Email server is ready to send messages');
+    }
+});
 
 // Trust proxy - required for Railway/production environments
 app.set('trust proxy', 1);
@@ -24,6 +34,24 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Request logging middleware
+app.use((req, res, next) => {
+    const start = Date.now();
+    const clientIp = req.ip || req.connection.remoteAddress;
+
+    // Log when request comes in
+    console.log(`📥 [${new Date().toLocaleTimeString()}] ${req.method} ${req.url} from ${clientIp}`);
+
+    // Log when response is sent
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        const statusEmoji = res.statusCode >= 400 ? '❌' : '✅';
+        console.log(`📤 [${new Date().toLocaleTimeString()}] ${statusEmoji} ${req.method} ${req.url} - ${res.statusCode} (${duration}ms) [${clientIp}]`);
+    });
+
+    next();
+});
 
 // Session configuration
 app.use(session({
@@ -550,10 +578,10 @@ app.post('/api/forgot-password', async (req, res) => {
                     return res.status(500).json({ error: 'Failed to generate reset code' });
                 }
 
-                // Send email with reset code using SendGrid
-                const msg = {
+                // Send email with Gmail SMTP
+                const mailOptions = {
+                    from: `"Potato Kingdom" <${process.env.GMAIL_USER}>`,
                     to: email,
-                    from: process.env.EMAILUSER || 'benabutbul1980@gmail.com',
                     subject: 'Password Reset Code - Potato Kingdom',
                     html: `
                         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -576,17 +604,14 @@ app.post('/api/forgot-password', async (req, res) => {
                     `
                 };
 
-                // Send email with SendGrid
-                sgMail.send(msg)
+                // Send email with Gmail
+                transporter.sendMail(mailOptions)
                     .then(() => {
                         console.log('✅ Password reset email sent successfully to:', email);
                         res.json({ message: 'Reset code has been sent to your email' });
                     })
                     .catch((error) => {
-                        console.error('Error sending email:', error);
-                        if (error.response) {
-                            console.error('SendGrid error details:', error.response.body);
-                        }
+                        console.error('❌ Error sending email:', error.message);
                         // Still log to console as fallback
                         console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
                         console.log('🔑 PASSWORD RESET CODE (Email failed)');
