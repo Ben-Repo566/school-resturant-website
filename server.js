@@ -374,6 +374,25 @@ app.get('/cart', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'html', 'cart.html'));
 });
 
+app.get('/forgot-password', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'html', 'forgot-password.html'));
+});
+
+app.get('/reset-password', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'html', 'reset-password.html'));
+});
+
+app.get('/change-password', (req, res) => {
+    if (!req.session.userId) {
+        return res.redirect('/login');
+    }
+    res.sendFile(path.join(__dirname, 'public', 'html', 'change-password.html'));
+});
+
+app.get('/admin-login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'html', 'admin-login.html'));
+});
+
 
 // Register endpoint
 app.post('/api/register', rateLimit({ max: 5, windowMs: 60 * 60 * 1000, message: 'Too many registration attempts, please try again in an hour' }), async (req, res) => {

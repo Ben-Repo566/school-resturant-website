@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 // Use Railway environment variables
 const connection = mysql.createConnection({
