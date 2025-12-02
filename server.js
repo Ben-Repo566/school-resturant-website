@@ -334,44 +334,44 @@ db.getConnection((err, connection) => {
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'index.html'));
 });
 
 app.get('/menu', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'menu.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'menu.html'));
 });
 
 app.get('/fun-facts', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'fun-facts.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'fun-facts.html'));
 });
 
 app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'register.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'register.html'));
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'login.html'));
 });
 
 app.get('/dashboard', (req, res) => {
     if (!req.session.userId) {
         return res.redirect('/login');
     }
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'dashboard.html'));
 });
 
 app.get('/admin', (req, res) => {
     if (!req.session.userId || !req.session.isAdmin) {
         return res.redirect('/login');
     }
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'admin.html'));
 });
 
 app.get('/cart', (req, res) => {
     if (!req.session.userId) {
         return res.redirect('/login');
     }
-    res.sendFile(path.join(__dirname, 'public', 'cart.html'));
+    res.sendFile(path.join(__dirname, 'public', 'html', 'cart.html'));
 });
 
 
