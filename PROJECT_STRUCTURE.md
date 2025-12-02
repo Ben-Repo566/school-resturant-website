@@ -6,6 +6,9 @@ This document explains the organized folder structure of the Potato Kingdom Rest
 - `server.js` - Main Node.js/Express server
 - `package.json` - Project dependencies and scripts
 - `.env` - Environment variables (not in git)
+- `Dockerfile` - Docker image configuration
+- `docker-compose.yml` - Multi-container setup for local development
+- `.dockerignore` - Files to exclude from Docker image
 
 ## Folders
 
@@ -30,12 +33,6 @@ Database schemas and initialization scripts:
 - `init.sql` - Initial database setup
 - `create_cart_tables.sql` - Shopping cart tables
 - `setup_admin.sql` - Admin setup SQL
-
-### `/docker` - Docker Configuration
-Docker deployment files:
-- `Dockerfile` - Docker image configuration
-- `docker-compose.yml` - Multi-container setup
-- `.dockerignore` - Files to exclude from Docker image
 
 ### `/docs` - Documentation
 Project documentation and guides:
