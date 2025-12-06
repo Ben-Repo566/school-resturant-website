@@ -1,3 +1,12 @@
+/* Prevent flash of unstyled content */
+html {
+    visibility: hidden;
+}
+
+html.theme-loaded {
+    visibility: visible;
+}
+
 * {
     margin: 0;
     padding: 0;

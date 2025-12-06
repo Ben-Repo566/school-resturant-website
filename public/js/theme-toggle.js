@@ -1,5 +1,6 @@
 // Theme Toggle Functionality
 // Handles dark/light mode switching with localStorage persistence
+// Prevents flash by applying theme before page renders
 
 (function() {
     'use strict';
@@ -31,14 +32,12 @@
         saveTheme(newTheme);
     };
 
-    // Initialize theme on page load
-    const initTheme = () => {
-        const savedTheme = getSavedTheme();
-        applyTheme(savedTheme);
-    };
+    // Apply theme immediately to prevent flash (runs before DOM is ready)
+    const savedTheme = getSavedTheme();
+    applyTheme(savedTheme);
 
-    // Apply theme immediately to prevent flash
-    initTheme();
+    // Show the page now that theme is applied
+    document.documentElement.classList.add('theme-loaded');
 
     // Set up toggle button when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
