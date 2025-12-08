@@ -134,6 +134,9 @@
         </div>
     </div>
 
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTop" title="Scroll to top">↑</button>
+
     <script src="/js/navbar-auth.js"></script>
     <script>
         // Mobile menu toggle
@@ -142,6 +145,24 @@
 
         navToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
+        });
+
+        // Scroll to top functionality
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
     </script>
 </body>
